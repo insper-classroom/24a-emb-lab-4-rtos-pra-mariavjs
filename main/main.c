@@ -83,6 +83,7 @@ void oled_task(void *p) {
                     gfx_clear_buffer(&disp);
                     snprintf(distance_str, sizeof(distance_str), "%.2f", distance);
                     gfx_draw_string(&disp, 0, 0, 1, distance_str);
+                    gfx_draw_line(&disp, 15, 27, distance, 27);
                     gfx_show(&disp);
                     vTaskDelay(pdMS_TO_TICKS(50));
             }
@@ -231,4 +232,3 @@ int main() {
 
     }
 }
-
