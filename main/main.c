@@ -26,8 +26,6 @@ const uint LED_3_OLED = 22;
 const int TRIG_PIN = 12;
 const int ECHO_PIN = 13;
 
-int SOUND_SPEED = 340;
-
 // volatile absolute_time_t start_time;
 // volatile absolute_time_t end_time;
 
@@ -77,7 +75,6 @@ void oled_task(void *p) {
     printf("Inicializando btn and LEDs\n");
     oled1_btn_led_init();
 
-    char cnt = 15;
     while (1) {
         float distance;
         char distance_str[20];
