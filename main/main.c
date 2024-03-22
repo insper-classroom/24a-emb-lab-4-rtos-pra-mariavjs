@@ -97,7 +97,7 @@ void oled_task(void *p) {
 
 //DISTANCIA E TIMER
 void pin_callback(uint gpio, uint32_t events) {
-    static uint32_t start_time, end_time;
+    static uint32_t start_time, end_time, duration
     if (gpio == ECHO_PIN) {
         if (gpio_get(ECHO_PIN)) {
             // ECHO_PIN mudou para alto
@@ -106,7 +106,7 @@ void pin_callback(uint gpio, uint32_t events) {
             // ECHO_PIN mudou para baixo
             end_time = to_us_since_boot(get_absolute_time());
             
-            uint64_t duration = end_time - start_time;
+            duration = end_time - start_time;
             xQueueSendFromISR(xQueue_time, &duration, 0);
         }
     }
