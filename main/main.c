@@ -29,8 +29,6 @@ const int ECHO_PIN = 13;
 // volatile absolute_time_t start_time;
 // volatile absolute_time_t end_time;
 
-volatile uint64_t start_time;
-volatile uint64_t end_time;
 
 
 // criando uma fila
@@ -99,6 +97,7 @@ void oled_task(void *p) {
 
 //DISTANCIA E TIMER
 void pin_callback(uint gpio, uint32_t events) {
+    static uint32_t start_time, end_time;
     if (gpio == ECHO_PIN) {
         if (gpio_get(ECHO_PIN)) {
             // ECHO_PIN mudou para alto
