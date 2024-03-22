@@ -76,23 +76,35 @@ void oled_task(void *p) {
     while (1) {
         float distance;
         
-        if ((xSemaphoreTake(xSemaphore_trigger, pdMS_TO_TICKS(100)) == pdTRUE) ){
+        if ((xSemaphoreTake(xSemaphore_trigger, 0) == pdTRUE) ){
 
-            if (xQueueReceive(xQueue_distance, &distance, pdMS_TO_TICKS(50))){
+            if (xQueueReceive(xQueue_distance, &distance, 0)){                    
                     char distance_str[20];
+                    // Calcule a largura da barra com base na distância medida
+                    int tam_barra; 
+                    // Calculando a largura da barra proporcional à distância
+                    tam_barra = (int)(((distance - 2.0) / (400.0 - 2.0)) * 100.0);
+
                     gfx_clear_buffer(&disp);
-                    snprintf(distance_str, sizeof(distance_str), "%.2f", distance);
+
+
+                    snprintf(distance_str, sizeof(distance_str), "Distancia: %.2f", distance);
                     gfx_draw_string(&disp, 0, 0, 1, distance_str);
-                    gfx_draw_line(&disp, 15, 27, distance, 27);
+                    gfx_draw_line(&disp, 15, 27, 15 + tam_barra, 27);
                     gfx_show(&disp);
-                    vTaskDelay(pdMS_TO_TICKS(50));
+                    vTaskDelay(pdMS_TO_TICKS(50));}
+            } else {
+                gfx_clear_buffer(&disp);
+                gfx_draw_string(&disp, 0, 0, 1, "ERRO");
+                gfx_show(&disp);
+                vTaskDelay(pdMS_TO_TICKS(50));
             }
             
         }
 
     }
 
-}
+
 
 
 
@@ -162,7 +174,7 @@ void echo_sensor() {
     gpio_pull_up(ECHO_PIN);
 
     while (true) {
-        if (xQueueReceive(xQueue_time, &duration, pdMS_TO_TICKS(50))) {
+        if (xQueueReceive(xQueue_time, &duration,0)) {
             
             float distance = duration / 58.0;
             xQueueSend(xQueue_distance, &distance, 0);
@@ -181,35 +193,6 @@ int main() {
     xSemaphore_trigger = xSemaphoreCreateBinary();
     xQueue_time = xQueueCreate(32, sizeof(uint64_t)); // Ajuste conforme necessário
     xQueue_distance = xQueueCreate(32, sizeof(float)); // Ajuste conforme necessário
-
-    
-    
-    // // configura o rtc para iniciar em um momento especifico
-    // datetime_t t = {
-    //     .year  = 2020,
-    //     .month = 01,
-    //     .day   = 13,
-    //     .dotw  = 3, // 0 is Sunday, so 3 is Wednesday
-    //     .hour  = 11,
-    //     .min   = 20,
-    //     .sec   = 00
-    // };
-    // rtc_init();
-    // rtc_set_datetime(&t);
-
-    // // configura o alarme para disparar uma vez a cada segundo
-    // datetime_t alarm = {
-    //     .year  = -1,
-    //     .month = -1,
-    //     .day   = -1,
-    //     .dotw  = -1, 
-    //     .hour  = -1,
-    //     .min   = -1,
-    //     .sec   = 01 
-    // };
-
-    // rtc_set_alarm(&alarm, &alarm_callback);
-
     
 
     //TASKS E SCHEDULE
