@@ -77,10 +77,11 @@ void oled_task(void *p) {
 
     while (1) {
         float distance;
-        char distance_str[20];
+        
         if ((xSemaphoreTake(xSemaphore_trigger, pdMS_TO_TICKS(100)) == pdTRUE) ){
 
             if (xQueueReceive(xQueue_distance, &distance, pdMS_TO_TICKS(50))){
+                    char distance_str[20];
                     gfx_clear_buffer(&disp);
                     snprintf(distance_str, sizeof(distance_str), "%.2f", distance);
                     gfx_draw_string(&disp, 0, 0, 1, distance_str);
